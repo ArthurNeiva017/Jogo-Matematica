@@ -1,0 +1,211 @@
+    <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Jogo de Operações Matemáticas</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #222;
+    color: #eee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  h1 {
+    margin-bottom: 10px;
+  }
+  #game {
+    background: #333;
+    padding: 20px 30px;
+    border-radius: 10px;
+    width: 320px;
+    text-align: center;
+  }
+  #question {
+    font-size: 28px;
+    margin: 20px 0;
+  }
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  button.option {
+    padding: 10px;
+    font-size: 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    background: #444;
+    color: #eee;
+    transition: background-color 0.3s;
+  }
+  button.option:hover {
+    background: #666;
+  }
+  #status {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+  #lives {
+    margin-top: 10px;
+  }
+  #phase {
+    margin-top: 5px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Jogo de Operações Matemáticas</h1>
+<div id="game">
+  <div id="question">Carregando...</div>
+  <div class="options">
+    <button class="option" id="opt1"></button>
+    <button class="option" id="opt2"></button>
+    <button class="option" id="opt3"></button>
+  </div>
+  <div id="status"></div>
+  <div id="lives">Vidas: 3</div>
+  <div id="phase">Fase: 1</div>
+</div>
+
+<script>
+  const questionEl = document.getElementById('question');
+  const statusEl = document.getElementById('status');
+  const livesEl = document.getElementById('lives');
+  const phaseEl = document.getElementById('phase');
+  const options = [
+    document.getElementById('opt1'),
+    document.getElementById('opt2'),
+    document.getElementById('opt3')
+  ];
+
+  let lives = 3;
+  let phase = 1;
+  let correctAnswer = null;
+
+  // Função para gerar um número inteiro entre min e max (inclusive)
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  // Gera uma operação matemática baseada na fase
+  function generateQuestion(phase) {
+    // Quanto maior a fase, maior o número máximo e mais operações complexas
+    let maxNumber = 10 + phase * 5; // aumenta o intervalo dos números
+    let operators = ['+', '-'];
+
+    if (phase >= 3) operators.push('*');
+    if (phase >= 5) operators.push('/');
+
+    // Escolhe operador aleatório
+    let op = operators[randomInt(0, operators.length -1)];
+
+    let a, b, questionStr, answer;
+
+    if (op === '+') {
+      a = randomInt(1, maxNumber);
+      b = randomInt(1, maxNumber);
+      answer = a + b;
+      questionStr = `${a} + ${b} = ?`;
+    } else if (op === '-') {
+      a = randomInt(1, maxNumber);
+      b = randomInt(1, a); // para evitar resultado negativo
+      answer = a - b;
+      questionStr = `${a} - ${b} = ?`;
+    } else if (op === '*') {
+      a = randomInt(1, Math.min(12, maxNumber));
+      b = randomInt(1, Math.min(12, maxNumber));
+      answer = a * b;
+      questionStr = `${a} × ${b} = ?`;
+    } else if (op === '/') {
+      // Para divisão exata, geramos o resultado e depois multiplicamos para obter o dividendo
+      b = randomInt(1, Math.min(12, maxNumber));
+      answer = randomInt(1, Math.min(12, maxNumber));
+      a = answer * b;
+      questionStr = `${a} ÷ ${b} = ?`;
+    }
+
+    return { questionStr, answer };
+  }
+
+  // Gera opções, incluindo a correta e duas erradas
+  function generateOptions(correct) {
+    let options = new Set();
+    options.add(correct);
+
+    while (options.size < 3) {
+      let fake = correct + randomInt(-10, 10);
+      if (fake !== correct && fake >= 0) {
+        options.add(fake);
+      }
+    }
+
+    // Embaralhar as opções
+    let optsArray = Array.from(options);
+    for (let i = optsArray.length -1; i > 0; i--) {
+      let j = randomInt(0, i);
+      [optsArray[i], optsArray[j]] = [optsArray[j], optsArray[i]];
+    }
+    return optsArray;
+  }
+
+  // Atualiza a interface com nova pergunta e opções
+  function newQuestion() {
+    statusEl.textContent = '';
+    let q = generateQuestion(phase);
+    correctAnswer = q.answer;
+    questionEl.textContent = q.questionStr;
+
+    let opts = generateOptions(correctAnswer);
+    for (let i = 0; i < options.length; i++) {
+      options[i].textContent = opts[i];
+      options[i].disabled = false;
+      options[i].style.backgroundColor = '#444';
+    }
+  }
+
+  // Atualiza o display de vidas e fase
+  function updateStatus() {
+    livesEl.textContent = `Vidas: ${lives}`;
+    phaseEl.textContent = `Fase: ${phase}`;
+  }
+
+  // Quando o jogador escolhe uma opção
+  function chooseOption(e) {
+    let chosen = Number(e.target.textContent);
+    if (chosen === correctAnswer) {
+      statusEl.textContent = 'Acertou! Subindo de fase.';
+      phase++;
+      newQuestion();
+    } else {
+      lives--;
+      statusEl.textContent = `Errou! Resposta correta: ${correctAnswer}`;
+      if (lives <= 0) {
+        alert('Game Over! O jogo será reiniciado.');
+        lives = 3;
+        phase = 1;
+      }
+      newQuestion();
+    }
+    updateStatus();
+  }
+
+  options.forEach(btn => {
+    btn.addEventListener('click', chooseOption);
+  });
+
+  // Inicializa o jogo
+  updateStatus();
+  newQuestion();
+</script>
+
+</body>
+</html>
