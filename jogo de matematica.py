@@ -1,12 +1,11 @@
 import random
 
-
-
 acertos = 0
 erros = 0
 
+lista_raiz = [4,9,16,25,36,49,64,81]
 
-while True if acertos < 10 else False:
+while True:
     
     if erros == 3:
         print('Você perdeu')
@@ -19,7 +18,7 @@ while True if acertos < 10 else False:
         a = random.randrange(1,12)
         b = random.randrange(1,6)
         print(f'{a} + {b}')
-        resposta = int(input('Digite a resposta: '))
+        resposta = float(input('Digite a resposta: '))
         if resposta == a+b:
             print('Parabens você acertou')
             acertos += 1
@@ -31,7 +30,7 @@ while True if acertos < 10 else False:
         a = random.randrange(1,12)
         b = random.randrange(1,6)
         print(f'{a} - {b}')
-        resposta = int(input('Digite a resposta: '))
+        resposta = float(input('Digite a resposta: '))
         if resposta == a-b:
             print('Parabens você acertou')
             acertos += 1
@@ -43,7 +42,7 @@ while True if acertos < 10 else False:
          a = random.randrange(1,12)
          b = random.randrange(1,6)
          print(f'{a} x {b}')
-         resposta = int(input('Digite a resposta: '))
+         resposta = float(input('Digite a resposta: '))
          if resposta == a*b:
               print('Parabens você acertou')
               acertos += 1
@@ -55,7 +54,7 @@ while True if acertos < 10 else False:
         a = random.randrange(1,12)
         b = random.randrange(1,6)
         print(f'{a} / {b}')
-        resposta = int(input('Digite a resposta: '))
+        resposta = float(input('Digite a resposta: '))
         if resposta == a/b:
             print('Parabens você acertou')
             acertos += 1
@@ -65,9 +64,9 @@ while True if acertos < 10 else False:
     
     elif aletorio == 4:
         a = random.randrange(1,12)
-        b = random.randrange(1,6)
+        b = random.randrange(1,4)
         print(f'{a} ^ {b}')
-        resposta = int(input('Digite a resposta: '))
+        resposta = float(input('Digite a resposta: '))
         if resposta == a**b:
             print('Parabens você acertou')
             acertos += 1
@@ -76,9 +75,9 @@ while True if acertos < 10 else False:
              erros += 1
     
     elif aletorio == 5:
-        a = random.randrange(1,12)
+        a = random.choice(lista_raiz)
         print(f'Qual a raiz quadrada de {a}')
-        resposta = int(input('Digite a resposta: '))
+        resposta = float(input('Digite a resposta: '))
         if resposta == a**(1/2):
             print('Parabens você acertou')
             acertos += 1
@@ -86,6 +85,8 @@ while True if acertos < 10 else False:
              print(f'Você errou, a resposta correta é {a**(1/2)}')
              erros += 1
     
+
+
 
 
     
